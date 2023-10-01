@@ -2,11 +2,11 @@
 #define __CORD_H__
 
 #include <ostream>
+
 #include "units.h"
 
-struct Cord
-{
-public:
+struct Cord {
+   public:
     len_t x;
     len_t y;
 
@@ -21,10 +21,18 @@ public:
     bool operator!=(const Cord &comp) const;
 
     bool operator<(const Cord &comp) const;
+    size_t operator()(const Cord& key) const;
 
-    friend std::ostream &operator << (std::ostream &os, const Cord &c);
+    friend std::ostream &operator<<(std::ostream &os, const Cord &c);
 };
 
-std::ostream &operator << (std::ostream &os, const Cord &c);
+namespace std{
+    template<>
+    struct hash<Cord>{
+        size_t operator()(const Cord &key) const;
+    };
+}
 
-#endif // #define __CORD_H__
+std::ostream &operator<<(std::ostream &os, const Cord &c);
+
+#endif  // #define __CORD_H__
