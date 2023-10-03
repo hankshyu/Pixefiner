@@ -3,7 +3,10 @@
 
 #include <ostream>
 
+#include <boost/polygon/polygon.hpp>
 #include "units.h"
+
+typedef boost::polygon::point_data<len_t> mCord;
 
 struct Cord {
    public:
@@ -34,5 +37,6 @@ namespace std{
 }
 
 std::ostream &operator<<(std::ostream &os, const Cord &c);
+std::ostream &operator<<(std::ostream &os, const mCord &c);
 
 #endif  // #define __CORD_H__

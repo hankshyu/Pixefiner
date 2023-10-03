@@ -21,6 +21,7 @@
 #define BR_MAGENTA     "\u001b[35m;1m"
 #define BR_CYAN        "\u001b[36m;1m"
 #define BR_WHITE       "\u001b[37m;1m"
+
 #define C0 "\u001b[38;5;0m"
 #define C1 "\u001b[38;5;1m"
 #define C2 "\u001b[38;5;2m"

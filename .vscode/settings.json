@@ -86,6 +86,9 @@
         "unordered_set": "cpp",
         "valarray": "cpp",
         "numeric": "cpp",
-        "random": "cpp"
+        "random": "cpp",
+        "functional": "cpp",
+        "hash_map": "cpp",
+        "hash_set": "cpp"
     }
 }

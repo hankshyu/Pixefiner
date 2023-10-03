@@ -16,7 +16,7 @@ Cord Cord::operator*(const len_t &scalar) const {
 }
 
 Cord Cord::operator/(const len_t &scalar) const {
-    return Cord(x / scalar, y / scalar);
+    return Cord(x/scalar, y/scalar);
 }
 
 bool Cord::operator==(const Cord &comp) const {
@@ -37,5 +37,10 @@ size_t std::hash<Cord>::operator()(const Cord &key) const {
 
 std::ostream &operator<<(std::ostream &os, const Cord &c) {
     os << "(" << c.x << ", " << c.y << ")";
+    return os;
+}
+
+std::ostream &operator<<(std::ostream &os, const mCord &c) {
+    os << "(" << c.x() << ", " << c.y() << ")";
     return os;
 }
