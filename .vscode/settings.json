@@ -89,6 +89,12 @@
         "random": "cpp",
         "functional": "cpp",
         "hash_map": "cpp",
-        "hash_set": "cpp"
+        "hash_set": "cpp",
+        "charconv": "cpp",
+        "csignal": "cpp",
+        "coroutine": "cpp",
+        "source_location": "cpp",
+        "span": "cpp",
+        "*.ipp": "cpp"
     }
 }

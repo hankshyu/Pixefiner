@@ -5,34 +5,46 @@ DEBUGFLAGS = -g
 
 SRCPATH = ./src
 BINPATH = ./bin
-BOOSTPATH = ./boost_1_72_0/ # ! Remember to specify the path
+OBJPATH = ./obj
+BOOSTPATH = ./boost_1_84_0/ # ! Remember to specify the path
 
-all: pxrun
-debug: pxrun_debug
+all: csrun
+debug: csrun_debug
 
 # LINKFLAGS = -pedantic -Wall -fomit-frame-pointer -funroll-all-loops -O3
 LINKFLAGS = -O3
 
-pxrun: main.o monitor.o cord.o
+_OBJS =	main.o \
+		cSException.o globalResult.o \
+		cord.o line.o rectangle.o doughnutPolygon.o tile.o \
+		cornerStitching.o rectilinear.o connection.o \
+		eVector.o \
+		floorplan.o
+		
+OBJS = $(patsubst %,$(OBJPATH)/%,$(_OBJS))
+DBG_OBJS = $(patsubst %.o, $(OBJPATH)/%_dbg.o, $(_OBJS))
+
+csrun: $(OBJS)
 	$(CXX) $(FLAGS) -I $(BOOSTPATH) $(LINKFLAGS) $^ -o $(BINPATH)/$@
 
-main.o: $(SRCPATH)/main.cpp 
+$(OBJPATH)/main.o: $(SRCPATH)/main.cpp 
 	$(CXX) $(FLAGS) -I $(BOOSTPATH) $(CFLAGS) $(LINKFLAGS) -DCOMPILETIME="\"`date`\"" $^ -o $@
 
-%.o: $(SRCPATH)/%.cpp $(SRCPATH)/%.h
+$(OBJPATH)/%.o: $(SRCPATH)/%.cpp $(SRCPATH)/%.h
 	$(CXX) $(FLAGS) -I $(BOOSTPATH) $(CFLAGS) $(LINKFLAGS) $< -o $@
 
 
 
-pxrun_debug: main_db.o monitor_db.o cord_db.o
+csrun_debug: $(SRCPATH)/units.h $(SRCPATH)/colours.h $(DBG_OBJS)
 	$(CXX) $(DEBUGFLAGS) -I $(BOOSTPATH) $(LINKFLAGS) $^ -o $(BINPATH)/$@
 
-main_db.o: $(SRCPATH)/main.cpp 
+$(OBJPATH)/main_dbg.o: $(SRCPATH)/main.cpp 
 	$(CXX) $(DEBUGFLAGS) -I $(BOOSTPATH) $(CFLAGS) -DCOMPILETIME="\"`date`\"" $^ -o $@
 
-%_db.o: $(SRCPATH)/%.cpp $(SRCPATH)/%.h
+$(OBJPATH)/%_dbg.o: $(SRCPATH)/%.cpp $(SRCPATH)/%.h
 	$(CXX) $(DEBUGFLAGS) -I $(BOOSTPATH) $(CFLAGS) $< -o $@
 
+.PHONY: clean
 clean:
-	rm -rf *.o *.gch *.out $(BINPATH)/* 
+	rm -rf *.gch *.out $(OBJPATH)/* $(BINPATH)/* 
 

@@ -3,40 +3,23 @@
 
 #include <ostream>
 
-#include <boost/polygon/polygon.hpp>
+#include "boost/polygon/polygon.hpp"
 #include "units.h"
 
-typedef boost::polygon::point_data<len_t> mCord;
+typedef boost::polygon::point_data<len_t> Cord;
 
-struct Cord {
-   public:
-    len_t x;
-    len_t y;
-
-    Cord(len_t x_in, len_t y_in);
-
-    Cord operator+(const Cord &addend) const;
-    Cord operator-(const Cord &subtrahend) const;
-    Cord operator*(const len_t &scalar) const;
-    Cord operator/(const len_t &scalar) const;
-
-    bool operator==(const Cord &comp) const;
-    bool operator!=(const Cord &comp) const;
-
-    bool operator<(const Cord &comp) const;
-    size_t operator()(const Cord& key) const;
-
-    friend std::ostream &operator<<(std::ostream &os, const Cord &c);
+// Implement hash function for map and set data structure
+namespace std {
+template <>
+struct hash<Cord> {
+    size_t operator()(const Cord &key) const;
 };
-
-namespace std{
-    template<>
-    struct hash<Cord>{
-        size_t operator()(const Cord &key) const;
-    };
-}
+}  // namespace std
 
 std::ostream &operator<<(std::ostream &os, const Cord &c);
-std::ostream &operator<<(std::ostream &os, const mCord &c);
+
+inline len_t calL1Distance(Cord c1, Cord c2) {
+    return boost::polygon::manhattan_distance<Cord, Cord>(c1, c2);
+}
 
 #endif  // #define __CORD_H__

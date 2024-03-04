@@ -1,5 +1,7 @@
 .DS_Store
 visualise/
+inputs/
 output/
 boost_*
+./vscode
 *.o
