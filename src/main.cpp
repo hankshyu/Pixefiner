@@ -24,16 +24,33 @@
 int main(int argc, char const *argv[]) {
 
 	try{
+		using namespace boost::polygon::operators;
 
-		Cord orig(0, 0);
-		Cord c1(1, -1);
-		EVector v1 (orig, c1);
-		std::cout << v1.calculateL1Magnitude() << std::endl;
-		std::cout << v1.calculateL2Magnitude() << std::endl;
-		std::cout << v1.calculateDirection() << std::endl;
-		EVector ev1(14, 0);
-		EVector ev2(11, 0);
-		std::cout << vec::calculateAngle(ev1, ev2);
+		std::vector<Cord> cvec = {Cord(10, 20), Cord(10, 40), Cord(20, 40), Cord(20, 30), Cord(30, 30), Cord(30, 20)};
+
+
+		DoughnutPolygonSet dps;
+		DoughnutPolygon dp;
+		boost::polygon::set_points(dp, cvec.begin(), cvec.end());
+
+		dps += dp;
+		std::vector<Rectangle> frag;
+		dps::diceIntoRectangles(dps, frag);
+		for(Rectangle const &r : frag){
+			std::cout << r << std::endl;
+		}
+
+		std::vector<Cord> csurr;
+		dp::acquireClockwiseWinding(dp, csurr);
+		std::cout << "The windings: " << std::endl;
+
+		for(Cord &c : csurr){
+			std::cout << c << std::endl;
+		}
+
+
+		
+		
 	}catch(CSException c){
 		std::cout << "Exception caught -> ";
 		std::cout << c.what() << std::endl;
