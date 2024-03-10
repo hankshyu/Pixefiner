@@ -7,10 +7,8 @@
 
 struct LegalResultBlock{
     std::string name;
-    std::string type;
 
     int legalArea;
-    int llx, lly;
     int cornerCount;
     
     std::vector<int> xVec;
@@ -24,10 +22,17 @@ struct LegalResultConnection{
 
 class LegalResult{
 public:
+    int chipWidth, chipHeight;
+
+    int totalBlockCount;
     int softBlockCount;
     int fixedBlockCount;
 
-    std::vector<LegalResultBlock> blocks;
+    int connectionCount;
+
+    std::vector<LegalResultBlock> softBlocks;
+    std::vector<LegalResultBlock> fixedBlocks;
+
     std::vector<LegalResultConnection> connections;
 
     LegalResult();
@@ -38,8 +43,8 @@ public:
     bool operator == (const LegalResult &other) const;
     friend std::ostream &operator << (std::ostream &os, const LegalResult &lr);
 
-    void readLegalResult(std::ifstream &is);
     void readLegalResult(std::string globalResultFile);
+    void readLegalResult(std::ifstream &is);
 
 };
 
@@ -53,4 +58,5 @@ namespace std{
 std::ostream &operator << (std::ostream &os, const LegalResultBlock &lrb);
 std::ostream &operator << (std::ostream &os, const LegalResultConnection &lrc);
 std::ostream &operator << (std::ostream &os, const LegalResult &lr);
+
 #endif // __LEGALRESULT_H__

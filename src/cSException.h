@@ -17,6 +17,7 @@ inline std::unordered_map<std::string, const char*> CSEXCEPTION_LUT = {
     {"GLOBALRESULT_01", "GlobalResult(std::string globalResultFile): file stream not open"},
     {"GLOBALRESULT_02", "GlobalResult(const std::ifstream &ifs): file stream not open"},
     {"GLOBALRESULT_03", "readGlobalResult(std::ifstream &ifs): block inital placement is out of chip contour even after adjustments"},
+    {"GLOBALRESULT_04", "readGlobalResult(std::ifstream &ifs): read connectin with <1 vertices"},
 
     {"CORNERSTITCHING_01", "findPoint(): function's input key, the finding target, is out of canvas"},
     {"CORNERSTITCHING_02", "searchArea(): function's input box, the searching area, is out of canvas"},
@@ -70,6 +71,12 @@ inline std::unordered_map<std::string, const char*> CSEXCEPTION_LUT = {
     {"FLOORPLAN_21", "visualiseFloorplan(...): outputFileName invalid, cannot open file"},
     {"FLOORPLAN_22", "visualiseFloorplan(...): some Rectilinear in the system contains overlap tiles, cannot output"},
     {"FLOORPLAN_23", "visualiseFloorplan(...): some Rectilinear is not in one piece"},
+
+    {"LEGALRESULT_01", "readLegalResult(std::string legalResultFile): file stream not open"},
+    {"LEGALRESULT_02", "readLegalResult(const std::ifstream &ifs): file stream not open"},
+    {"LEGALRESULT_03", "readLegalResult(const std::ifstream &ifs): read soft block that has <4 corners"},
+    {"LEGALRESULT_04", "readLegalResult(const std::ifstream &ifs): read fixed block that has <4 corners"},
+    {"LEGALRESULT_05", "readLegalResult(const std::ifstream &ifs): read connection with <1 vetices"},
 };
 
 class CSException : public std::exception{

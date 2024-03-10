@@ -18,7 +18,7 @@ _OBJS =	main.o \
 		cSException.o globalResult.o \
 		cord.o line.o rectangle.o doughnutPolygon.o tile.o \
 		cornerStitching.o rectilinear.o connection.o \
-		eVector.o  \
+		eVector.o  legalResult.o\
 		floorplan.o
 		
 OBJS = $(patsubst %,$(OBJPATH)/%,$(_OBJS))

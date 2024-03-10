@@ -10,6 +10,7 @@
 #include "connection.h"
 #include "cornerStitching.h"
 #include "globalResult.h"
+#include "legalResult.h"
 
 class Floorplan{
 private:
@@ -47,6 +48,7 @@ public:
 
     Floorplan();
     Floorplan(GlobalResult gr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
+    Floorplan(LegalResult lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
     Floorplan(const Floorplan &other);
     ~Floorplan();
 

@@ -170,6 +170,21 @@ Floorplan::Floorplan(GlobalResult gr, double aspectRatioMin, double aspectRatioM
     }
 }
 
+Floorplan::Floorplan(LegalResult lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin)
+    : mGlobalAspectRatioMin(aspectRatioMin), mGlobalAspectRatioMax(aspectRatioMax), mGlobalUtilizationMin(utilizationMin) {
+
+    mChipContour = Rectangle(0, 0, lr.chipWidth, lr.chipHeight);
+    mAllRectilinearCount = lr.softBlockCount + lr.fixedBlockCount;
+    mConnectionCount = lr.connectionCount;
+
+    cs = new CornerStitching(lr.chipWidth, lr.chipHeight);
+
+    // map for connection linking
+    std::unordered_map<std::string, Rectilinear*> nameToRectilinear;
+
+
+}
+
 Floorplan::Floorplan(const Floorplan &other){
 
     // copy basic attributes

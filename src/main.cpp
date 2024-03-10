@@ -20,33 +20,17 @@
 #include "floorplan.h"
 
 #include "eVector.h"
+#include "legalResult.h"
 
 int main(int argc, char const *argv[]) {
 
 	try{
 		using namespace boost::polygon::operators;
 
-		std::vector<Cord> cvec = {Cord(10, 20), Cord(10, 40), Cord(20, 40), Cord(20, 30), Cord(30, 30), Cord(30, 20)};
-
-
-		DoughnutPolygonSet dps;
-		DoughnutPolygon dp;
-		boost::polygon::set_points(dp, cvec.begin(), cvec.end());
-
-		dps += dp;
-		std::vector<Rectangle> frag;
-		dps::diceIntoRectangles(dps, frag);
-		for(Rectangle const &r : frag){
-			std::cout << r << std::endl;
-		}
-
-		std::vector<Cord> csurr;
-		dp::acquireClockwiseWinding(dp, csurr);
-		std::cout << "The windings: " << std::endl;
-
-		for(Cord &c : csurr){
-			std::cout << c << std::endl;
-		}
+		LegalResult lr;
+		lr.readLegalResult("./inputs/case01_input.txt");
+		std::cout << "Displaying case01" << std::endl;
+		std::cout << lr << std::endl;
 
 
 		

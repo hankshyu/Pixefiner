@@ -36,8 +36,8 @@ public:
     bool operator == (const GlobalResult &other) const;
     friend std::ostream &operator << (std::ostream &os, const GlobalResult &gr);
 
-    void readGlobalResult(std::ifstream &is);
     void readGlobalResult(std::string globalResultFile);
+    void readGlobalResult(std::ifstream &is);
 };
 
 namespace std{

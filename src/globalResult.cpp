@@ -33,10 +33,12 @@ GlobalResult &GlobalResult::operator = (const GlobalResult &other){
 }
 
 bool GlobalResult::operator == (const GlobalResult &other) const {
-    bool attrbuteEqual = ((blockCount == other.blockCount) && (connectionCount == other.connectionCount) &&
+    bool attributeEqual = ((blockCount == other.blockCount) && (connectionCount == other.connectionCount) &&
             (chipWidth == other.chipWidth) && (chipHeight == other.chipHeight)); 
 
     bool vecSizeEqual = ((blocks.size() == other.blocks.size()) && (connections.size() == other.connections.size()));
+
+    if(!(attributeEqual && vecSizeEqual)) return false;
 
     for(int i = 0; i < blocks.size(); ++i){
         GlobalResultBlock aBlk = this->blocks[i];
@@ -47,17 +49,17 @@ bool GlobalResult::operator == (const GlobalResult &other) const {
     }
 
     for(int i = 0; i < connections.size(); ++i){
-        GlobalResultConnection aCnn = this->connections[i];
-        GlobalResultConnection bCnn = other.connections[i];
+        const GlobalResultConnection *aCnn = &(this->connections[i]);
+        const GlobalResultConnection *bCnn = &(other.connections[i]);
 
-        if(aCnn.weight != bCnn.weight) return false;
+        if(aCnn->weight != bCnn->weight) return false;
 
-        std::vector<std::string> aVts = aCnn.vertices;
-        std::vector<std::string> bVts = bCnn.vertices;
-        if(aVts.size() != bVts.size()) return false;
+        const std::vector<std::string> *aVts = &(aCnn->vertices);
+        const std::vector<std::string> *bVts = &(bCnn->vertices);
+        if(aVts->size() != bVts->size()) return false;
 
-        for(int i = 0; i < aVts.size(); ++i){
-            if(aVts[i] != bVts[i]) return false;
+        for(int i = 0; i < aVts->size(); ++i){
+            if(((*aVts)[i]) != ((*bVts)[i])) return false;
         }
     }
 
@@ -125,6 +127,9 @@ void GlobalResult::readGlobalResult(std::ifstream &ifs){
         }
         grc.weight = std::stod(grc.vertices.back());
         grc.vertices.pop_back();
+        if(grc.vertices.size() < 2){
+            throw CSException("GLOBALRESULT_04");
+        }
         this->connections.push_back(grc);
     }
 
@@ -156,11 +161,11 @@ std::ostream &operator << (std::ostream &os, const GlobalResult &gr){
         os << grb << std::endl;
     }
 
-    GlobalResultConnection grc;
+    const GlobalResultConnection *grc;
     int connectionNum = gr.connections.size();
     for(int i = 0; i < connectionNum; ++i){
-        grc = gr.connections[i]; 
-        os << grc;
+        grc = &(gr.connections[i]);
+        os << *grc;
         if(i != (connectionNum - 1)) os << std::endl;
     }
 
