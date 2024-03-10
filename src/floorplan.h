@@ -47,8 +47,8 @@ public:
 
 
     Floorplan();
-    Floorplan(GlobalResult gr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
-    Floorplan(LegalResult lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
+    Floorplan(const GlobalResult &gr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
+    Floorplan(const LegalResult &lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin);
     Floorplan(const Floorplan &other);
     ~Floorplan();
 

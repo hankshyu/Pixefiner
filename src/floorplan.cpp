@@ -121,7 +121,7 @@ Floorplan::Floorplan()
     : mChipContour(Rectangle(0, 0, 0, 0)) , mAllRectilinearCount(0), mSoftRectilinearCount(0), mPreplacedRectilinearCount(0), mConnectionCount(0) {
 }
 
-Floorplan::Floorplan(GlobalResult gr, double aspectRatioMin, double aspectRatioMax, double utilizationMin)
+Floorplan::Floorplan(const GlobalResult &gr, double aspectRatioMin, double aspectRatioMax, double utilizationMin)
     : mGlobalAspectRatioMin(aspectRatioMin), mGlobalAspectRatioMax(aspectRatioMax), mGlobalUtilizationMin(utilizationMin) {
 
     mChipContour = Rectangle(0, 0, gr.chipWidth, gr.chipHeight);
@@ -170,7 +170,7 @@ Floorplan::Floorplan(GlobalResult gr, double aspectRatioMin, double aspectRatioM
     }
 }
 
-Floorplan::Floorplan(LegalResult lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin)
+Floorplan::Floorplan(const LegalResult &lr, double aspectRatioMin, double aspectRatioMax, double utilizationMin)
     : mGlobalAspectRatioMin(aspectRatioMin), mGlobalAspectRatioMax(aspectRatioMax), mGlobalUtilizationMin(utilizationMin) {
 
     mChipContour = Rectangle(0, 0, lr.chipWidth, lr.chipHeight);
@@ -182,6 +182,67 @@ Floorplan::Floorplan(LegalResult lr, double aspectRatioMin, double aspectRatioMa
     // map for connection linking
     std::unordered_map<std::string, Rectilinear*> nameToRectilinear;
 
+    // fill in rectiliners
+    for(LegalResultBlock const &lrb : lr.softBlocks){
+        Rectilinear *newRect = new Rectilinear(mIDCounter++, lrb.name, rectilinearType::SOFT, Rectangle(0, 0, 0, 0), lrb.legalArea,
+                                                 this->mGlobalAspectRatioMin, this->mGlobalAspectRatioMax, this->mGlobalUtilizationMin);
+
+        this->allRectilinears.push_back(newRect);
+        this->softRectilinears.push_back(newRect);
+        
+        std::vector<Cord> cornerVec;
+        for(int i = 0; i < lrb.cornerCount; ++i){
+            cornerVec.push_back(Cord(lrb.xVec[i], lrb.yVec[i]));
+        }
+        using namespace boost::polygon::operators;
+        DoughnutPolygon dp;
+        boost::polygon::set_points(dp, cornerVec.begin(), cornerVec.end());
+        DoughnutPolygonSet dpSet;
+        dpSet += dp;
+
+        std::vector<Rectangle> afterDicedRect;
+        dps::diceIntoRectangles(dpSet, afterDicedRect);
+        for(Rectangle const &drec : afterDicedRect){
+            addBlockTile(drec, newRect);
+        }
+
+        nameToRectilinear[lrb.name] = newRect;
+    }
+
+    for(LegalResultBlock const &lrb : lr.fixedBlocks){
+        Rectilinear *newRect = new Rectilinear(mIDCounter++, lrb.name, rectilinearType::PREPLACED, Rectangle(0, 0, 0, 0), lrb.legalArea,
+                                                 this->mGlobalAspectRatioMin, this->mGlobalAspectRatioMax, this->mGlobalUtilizationMin);
+
+        this->allRectilinears.push_back(newRect); 
+        this->preplacedRectilinears.push_back(newRect);
+        std::vector<Cord> cornerVec;
+        for(int i = 0; i < lrb.cornerCount; ++i){
+            cornerVec.push_back(Cord(lrb.xVec[i], lrb.yVec[i]));
+        }
+        using namespace boost::polygon::operators;
+        DoughnutPolygon dp;
+        boost::polygon::set_points(dp, cornerVec.begin(), cornerVec.end());
+        DoughnutPolygonSet dpSet;
+        dpSet += dp;
+
+        std::vector<Rectangle> afterDicedRect;
+        dps::diceIntoRectangles(dpSet, afterDicedRect);
+        for(Rectangle const &drec : afterDicedRect){
+            addBlockTile(drec, newRect);
+        }
+
+        nameToRectilinear[lrb.name] = newRect;
+    }    
+
+    // create Connections
+    for(int i = 0; i < mConnectionCount; ++i){
+        std::vector<Rectilinear *> connVertices;
+        for(std::string const &str : lr.connections[i].vertices){
+            connVertices.push_back(nameToRectilinear[str]);
+        }
+
+        this->allConnections.push_back(Connection(connVertices, lr.connections[i].weight));
+    }
 
 }
 

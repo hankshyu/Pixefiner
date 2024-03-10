@@ -29,8 +29,9 @@ int main(int argc, char const *argv[]) {
 
 		LegalResult lr;
 		lr.readLegalResult("./inputs/case01_input.txt");
-		std::cout << "Displaying case01" << std::endl;
-		std::cout << lr << std::endl;
+
+		Floorplan fp(lr, 0.5, 2, 0.8);
+		fp.cs->visualiseCornerStitching("outputs/case01.txt");
 
 
 		
