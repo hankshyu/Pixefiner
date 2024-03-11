@@ -3,5 +3,6 @@ visualise/
 inputs/
 output/
 boost_*
+bin/
 ./vscode
 *.o

@@ -17,7 +17,6 @@ public:
     Refiner(const Refiner &other);
     ~Refiner()
 
-    
 }
 
 

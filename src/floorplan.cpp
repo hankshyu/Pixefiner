@@ -842,6 +842,42 @@ void Floorplan::visualiseLegalFloorplan(const std::string &outputFileName) const
     }
 }
 
+void Floorplan::removePrimitiveOvelaps(bool verbose){
+    std::cout << "[RPOV] " << "Show all overlaps" << std::endl;
+
+    std::vector<Tile*> allOverlapTiles, candOverlapTiles;
+    for(std::unordered_map<Tile*, std::vector<Rectilinear*>>::const_iterator it = overlapTilePayload.begin(); it != overlapTilePayload.end(); ++it){
+        allOverlapTiles.push_back(it->first);
+    }
+
+    // analyze overlap remove potentials:
+    for(Tile *const &ovtp : allOverlapTiles){
+        area_t overlapArea = ovtp->getArea();
+        area_t residualArea = 0;
+
+        for(Rectilinear* const &rect : overlapTilePayload[ovtp]){
+            residualArea += (rect->calculateActualArea() - rect->getLegalArea());
+        }
+        if(residualArea >= overlapArea){
+            candOverlapTiles.push_back(ovtp);
+        } 
+    }
+
+
+    std::cout << "Removal candidates :" << overlapTilePayload.size() << " -> " << candOverlapTiles.size() << std::endl;
+    for(Tile *const &t : candOverlapTiles){
+        Tile *t1 = t;
+        std::vector<Rectilinear*> v2 = overlapTilePayload[t];
+        
+        std::cout << *t1 << " A = " << t1->getArea() << " -> Overlap:(" << v2.size() << ")  ";
+        for(auto i : v2){
+            std::cout << i->getName() << " " << i->calculateActualArea() - i->getLegalArea() << ", ";
+        }
+        std::cout << "]" << std::endl;
+    }
+}
+
+
 size_t std::hash<Floorplan>::operator()(const Floorplan&key) const {
     return std::hash<Rectangle>()(key.getChipContour()) ^ std::hash<int>()(key.getAllRectilinearCount()) ^ std::hash<int>()(key.getConnectionCount());
 }

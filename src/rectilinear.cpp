@@ -287,7 +287,7 @@ bool Rectilinear::isLegal(rectilinearIllegalType &illegalCode) const {
 
 }
 
-void Rectilinear::acquireWinding(std::vector<Cord> &winding, windingDirection wd) const {
+void Rectilinear::acquireWinding(std::vector<Cord> &winding, direction1D wd) const {
     if((blockTiles.empty())&&(overlapTiles.empty())){
         throw CSException("RECTILINEAR_02");
     }
@@ -317,7 +317,7 @@ void Rectilinear::acquireWinding(std::vector<Cord> &winding, windingDirection wd
     boost::polygon::direction_1d direction = boost::polygon::winding(rectilinearShape);
     
     bool reverse_iterator;
-    if(wd == windingDirection::CLOCKWISE){
+    if(wd == direction1D::CLOCKWISE){
         reverse_iterator = (direction == boost::polygon::direction_1d_enum::CLOCKWISE)? false : true;
     }else{ // wd == windingDirection::ANTICLOCKWISE
         reverse_iterator = (direction == boost::polygon::direction_1d_enum::COUNTERCLOCKWISE)? false : true;
@@ -411,24 +411,6 @@ std::ostream &operator << (std::ostream &os, const rectilinearIllegalType &t){
         break;
     default:
         throw CSException("RECTILINEAR_06");
-        break;
-    }
-
-    return os;
-
-}
-
-std::ostream &operator << (std::ostream &os, const windingDirection &w){
-    switch (w)
-    {
-    case windingDirection::CLOCKWISE:
-        os << "CLOCKWISE";
-        break;
-    case windingDirection::ANTICLOCKWISE:
-        os << "ANTICLOCKWISE";
-        break;
-    default:
-        throw CSException("RECTILINEAR_07");
         break;
     }
 

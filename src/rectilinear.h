@@ -15,10 +15,6 @@ enum class rectilinearIllegalType{
     LEGAL, OVERLAP, AREA, ASPECT_RATIO, UTILIZATION, HOLE, TWO_SHAPE, MIN_CLEARANCE
 };
 
-enum class windingDirection{
-    CLOCKWISE, ANTICLOCKWISE
-};
-
 class Rectilinear{
 private:
     int mId;
@@ -96,7 +92,7 @@ public:
     bool isLegal(rectilinearIllegalType &illegalCode) const;
 
     // acquire the windings of rectiinear, may choose winding direction, points pass through vector "winding"
-    void acquireWinding(std::vector<Cord> &winding, windingDirection wd) const;
+    void acquireWinding(std::vector<Cord> &winding,  direction1D wd) const;
     
 };
 namespace std{
@@ -108,6 +104,5 @@ namespace std{
 std::ostream &operator << (std::ostream &os, const Rectilinear &t);
 std::ostream &operator << (std::ostream &os, const rectilinearType &t);
 std::ostream &operator << (std::ostream &os, const rectilinearIllegalType &t);
-std::ostream &operator << (std::ostream &os, const windingDirection &w);
 
 #endif // __RECTILINEAR_H__

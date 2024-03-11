@@ -104,6 +104,10 @@ public:
     // write Floorplan class for presenting software (renderFloorplan.py)
     void visualiseLegalFloorplan(const std::string &outputFileName) const;
     
+    // use area rounding residuals to remove certain easy to remove overlaps
+    void removePrimitiveOvelaps(bool verbose);
+
+    void findAttatchedTiles(const Rectilinear* centerRect, std::vector<Tile *> attatchedTiles);
 };
 
 namespace std{
