@@ -1,12 +1,15 @@
 #include <assert.h>
 #include <algorithm>
 #include <fstream>
+#include <unordered_map>
+#include <utility>
 
 #include "boost/polygon/polygon.hpp"
 #include "floorplan.h"
 #include "cSException.h"
 #include "doughnutPolygon.h"
 #include "doughnutPolygonSet.h"
+
 
 Rectilinear *Floorplan::placeRectilinear(std::string name, rectilinearType type, Rectangle placement, area_t legalArea, double aspectRatioMin, double aspectRatioMax, double mUtilizationMin){
     if(!rec::isContained(mChipContour,placement)){
@@ -843,24 +846,52 @@ void Floorplan::visualiseLegalFloorplan(const std::string &outputFileName) const
 }
 
 void Floorplan::removePrimitiveOvelaps(bool verbose){
-    std::cout << "[RPOV] " << "Show all overlaps" << std::endl;
+    std::cout << "[PrimitieOverlapRemoval] " << "Show all overlaps" << std::endl;
 
-    std::vector<Tile*> allOverlapTiles, candOverlapTiles;
+    // analyze overlap remove potentials, only keep those overlap tiles with residual area greater than overlap
+    std::vector<Tile*> candOverlapTiles;
     for(std::unordered_map<Tile*, std::vector<Rectilinear*>>::const_iterator it = overlapTilePayload.begin(); it != overlapTilePayload.end(); ++it){
-        allOverlapTiles.push_back(it->first);
-    }
-
-    // analyze overlap remove potentials:
-    for(Tile *const &ovtp : allOverlapTiles){
-        area_t overlapArea = ovtp->getArea();
+        Tile *overlapTile = it->first;
+        area_t overlapArea = overlapTile->getArea();
         area_t residualArea = 0;
 
-        for(Rectilinear* const &rect : overlapTilePayload[ovtp]){
+        for(Rectilinear* const &rect : overlapTilePayload[overlapTile]){
             residualArea += (rect->calculateActualArea() - rect->getLegalArea());
         }
         if(residualArea >= overlapArea){
-            candOverlapTiles.push_back(ovtp);
+            candOverlapTiles.push_back(overlapTile);
         } 
+    }
+
+
+    // Try to order overlap tiles in an order where difficult to solver tiles gets evaluated first
+    std::unordered_map<Tile *, std::vector<std::pair<Rectilinear *, area_t>>> removableOverlapMap;
+    std::unordered_map<Tile *, area_t> removableOverlapArea;
+
+    for(Tile *const &tl : candOverlapTiles){
+        // fill in removableOvelapMap
+            area_t candOverlapTileArea = tl->getArea();
+        for(Rectilinear *const &rect : this->overlapTilePayload[tl]){
+            using namespace boost::polygon::operators;
+            Rectilinear testRt = Rectilinear(*rect);
+            testRt.overlapTiles.erase(tl);
+            rectilinearIllegalType errorcode;
+            if(!testRt.isLegal(errorcode)){
+                std::cout << "Retired: " << *tl << " @ " << rect->getName() << " due to " << errorcode << std::endl;
+                continue;
+            }
+            
+            std::unordered_map<Tile *, std::vector<std::pair<Rectilinear *, area_t>>>::iterator removalbeOMIt = removableOverlapMap.find(tl); 
+            if(removalbeOMIt == removableOverlapMap.end()){
+                // not yet recorded
+                removableOverlapMap[tl] = std::vector<std::pair<Rectilinear *, area_t>>{std::pair<Rectilinear *, area_t>(rect, rect->calculateActualArea() - rect->getLegalArea())};
+                removableOverlapArea[tl] = candOverlapTileArea;
+            }else{
+                removableOverlapMap[tl].push_back(std::pair<Rectilinear *, area_t>(rect, rect->calculateActualArea() - rect->getLegalArea()));
+                removableOverlapArea[tl] += candOverlapTileArea;
+            }
+            
+        }
     }
 
 
@@ -874,6 +905,15 @@ void Floorplan::removePrimitiveOvelaps(bool verbose){
             std::cout << i->getName() << " " << i->calculateActualArea() - i->getLegalArea() << ", ";
         }
         std::cout << "]" << std::endl;
+    }
+
+    std::cout << "After one iteration of search: " << std::endl;
+    for(std::unordered_map<Tile *, std::vector<std::pair<Rectilinear *, area_t>>>::iterator it = removableOverlapMap.begin(); it != removableOverlapMap.end(); it++){
+        std::cout << *(it->first) << ":";
+        for(std::pair<Rectilinear *, area_t> pr : it->second){
+            std::cout << pr.first->getName() << " " << pr.second << ", ";
+        }
+        std::cout << std::endl;
     }
 }
 
