@@ -108,6 +108,8 @@ public:
     void removePrimitiveOvelaps(bool verbose);
 
     void findAttatchedTiles(const Rectilinear* centerRect, std::vector<Tile *> attatchedTiles);
+
+    void debugPrint();
 };
 
 namespace std{

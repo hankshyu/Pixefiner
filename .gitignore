@@ -2,7 +2,10 @@
 visualise/
 inputs/
 output/
+boost_*/
 boost_*
+glpk*/
+glpk*
 bin/
 ./vscode
 *.o
